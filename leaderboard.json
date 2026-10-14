@@ -1,0 +1,7 @@
+[
+  { "name": "SynthMaster", "score": 128400, "wave": 28, "ballsFired": 1420, "build": "Splitter Quantum", "date": "2026-10-11" },
+  { "name": "VaporPulse", "score": 96250, "wave": 22, "ballsFired": 1080, "build": "Chain Lightning", "date": "2026-10-12" },
+  { "name": "GridRunner", "score": 81500, "wave": 19, "ballsFired": 940, "build": "Plasma Nova", "date": "2026-10-12" },
+  { "name": "NeonPeglin", "score": 64900, "wave": 15, "ballsFired": 720, "build": "Laser Piercer", "date": "2026-10-13" },
+  { "name": "CyberBounce", "score": 45300, "wave": 12, "ballsFired": 510, "build": "Giga Bouncer", "date": "2026-10-14" }
+]

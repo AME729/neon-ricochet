@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Neon Ricochet: Rogue Synth | 2D Physics Roguelite</title>
+  <meta name="description" content="Turnkey 2D Physics Breaker Roguelite Web Game with Built-In Monetization & Flippa Dashboard">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="cyber-bg"></div>
+
+  <main id="game-wrapper">
+    <!-- Top Bar Navigation -->
+    <header class="top-header">
+      <div class="brand-title">⚡ NEON RICOCHET</div>
+      <div class="header-actions">
+        <button id="btn-open-lab" class="icon-btn" title="Synth Lab (Upgrades)">🔬 LAB</button>
+        <button id="btn-open-shop" class="icon-btn" title="Shop & Skins">🛒 SHOP</button>
+        <button id="btn-open-leaderboard" class="icon-btn" title="Global Leaderboard">🏆</button>
+        <button id="audio-toggle-btn" class="icon-btn" title="Toggle Sound">🔊</button>
+        <button id="flippa-admin-btn" class="icon-btn admin-pill" title="Owner Admin Dashboard">⚙️ FLIPPA</button>
+      </div>
+    </header>
+
+    <!-- In-Game HUD -->
+    <section id="game-hud" class="hidden">
+      <div class="hud-item">
+        <span class="hud-label">Score</span>
+        <span id="hud-score" class="hud-val score">0</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Wave</span>
+        <span id="hud-wave" class="hud-val wave">WAVE 1</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Volley</span>
+        <span id="hud-balls" class="hud-val">🔮 15</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Shields</span>
+        <span id="hud-shields" class="hud-val">🛡️ 3</span>
+      </div>
+      <div class="hud-item">
+        <span class="hud-label">Credits</span>
+        <span id="hud-credits" class="hud-val">💎 250</span>
+      </div>
+    </section>
+
+    <!-- Main Game Canvas -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Start / Title Screen Overlay -->
+    <div id="start-screen" class="modal-overlay">
+      <div class="hero-logo-box">
+        <h1 class="hero-main-title">NEON RICOCHET</h1>
+        <div class="hero-subtitle">ROGUE SYNTH PROTOCOL</div>
+        <div class="hero-badge-row">
+          <span class="hero-pill">60 FPS CANVAS</span>
+          <span class="hero-pill">ZERO ASSET AUDIO</span>
+          <span class="hero-pill">FLIPPA READY</span>
+        </div>
+      </div>
+      <div class="menu-actions">
+        <button id="btn-start-game" class="action-btn glow-btn">LANCER LA PARTIE</button>
+      </div>
+    </div>
+
+    <!-- Relic Selection Modal -->
+    <div id="relic-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">✨ CHOISISSEZ UNE RELIQUE SYNTH</div>
+        </div>
+        <div class="modal-body">
+          <div id="relic-cards-container" class="relic-cards-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Synth Lab (Permanent Meta Upgrades) Modal -->
+    <div id="lab-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">🔬 SYNTH LAB (AMÉLIORATIONS)</div>
+          <button id="lab-close-btn" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="margin-bottom: 12px; font-weight: 700; color: #00ffcc;" id="lab-credits-balance">💎 0</div>
+          <div id="lab-upgrades-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Shop / IAP Store Modal -->
+    <div id="shop-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">🛒 CYBER STORE & SKINS</div>
+          <button id="shop-close-btn" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div style="margin-bottom: 8px; font-weight: 700; color: #00ffcc;" id="shop-credits-balance">💎 0</div>
+          <div class="shop-section-title">PACKS DE CRÉDITS (IAP MONÉTISATION)</div>
+          <div id="shop-packs-list" class="shop-grid"></div>
+          <div class="shop-section-title">SKINS DE PROJECTILES</div>
+          <div id="shop-skins-list" class="skins-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="leaderboard-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">🏆 CLASSEMENT MONDIAL</div>
+          <button id="leaderboard-close-btn" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="leaderboard-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over-modal" class="modal-overlay hidden">
+      <div class="modal-card game-over-box">
+        <div class="modal-header">
+          <div class="modal-title" style="color: var(--neon-red);">SIGNAL PERDU (GAME OVER)</div>
+        </div>
+        <div class="modal-body">
+          <div id="final-wave" style="font-size: 13px; color: var(--neon-pink); letter-spacing: 2px;">WAVE 1</div>
+          <div id="final-score" class="game-over-score">0</div>
+
+          <!-- Rewarded Ads Monetization Zone -->
+          <div class="ad-reward-box">
+            <button id="btn-revive-ad" class="action-btn glow-btn pink">
+              📺 RÉANIMATION D'URGENCE (+2 BOUCLIERS)
+            </button>
+            <button id="btn-double-credits-ad" class="action-btn glow-btn gold">
+              📺 DOUBLER LES CRÉDITS (PUB VIDÉO)
+            </button>
+          </div>
+
+          <!-- Score Submission -->
+          <div class="score-submit-row">
+            <input type="text" id="player-name-input" class="styled-input" placeholder="Ton pseudo" maxlength="15" value="SynthPilot">
+            <button id="btn-submit-score" class="action-btn glow-btn" style="padding: 8px 14px; font-size: 11px;">ENVOYER</button>
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: center;">
+          <button id="btn-restart-game" class="action-btn glow-btn" style="width: 100%;">NOUVELLE PARTIE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rewarded Ad Simulator Modal -->
+    <div id="ad-modal" class="modal-overlay hidden">
+      <div class="modal-card" style="text-align: center; max-width: 380px;">
+        <div class="modal-header">
+          <div id="ad-title" class="modal-title">SPONSORED ADVERTISEMENT</div>
+        </div>
+        <div class="modal-body" style="padding: 24px 16px;">
+          <div style="font-size: 40px; margin-bottom: 12px;">📺</div>
+          <div id="ad-reward-desc" style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+            Chargement de la publicité sponsorisée...
+          </div>
+          <div id="ad-timer" style="font-family: var(--font-display); font-size: 18px; color: var(--neon-cyan);">
+            Récompense dans 4s
+          </div>
+        </div>
+        <div class="modal-footer" style="justify-content: center;">
+          <button id="ad-close-btn" class="action-btn glow-btn hidden">RÉCUPÉRER LA RÉCOMPENSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- IAP Checkout Simulator Modal -->
+    <div id="checkout-modal" class="modal-overlay hidden">
+      <div class="modal-card" style="max-width: 400px;">
+        <div class="modal-header">
+          <div class="modal-title">PAIEMENT SÉCURISÉ (SIMULATION STRIPE)</div>
+          <button id="checkout-cancel-btn" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="checkout-title" style="font-weight: 700; font-size: 16px; margin-bottom: 4px;">Item Name</div>
+          <div id="checkout-desc" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">Item Desc</div>
+          <div id="checkout-price" style="font-family: var(--font-display); font-size: 24px; color: var(--neon-cyan); margin-bottom: 16px;">$0.00</div>
+          <div id="checkout-status" style="font-size: 12px; min-height: 20px; margin-bottom: 12px;"></div>
+          <div style="display: flex; gap: 8px;">
+            <button id="checkout-confirm-btn" class="action-btn glow-btn" style="flex: 1;">CONFIRMER L'ACHAT</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Flippa Admin Dashboard Modal -->
+    <div id="admin-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">⚙️ TABLEAU DE BORD FLIPPA (PROPRIÉTAIRE)</div>
+          <button id="admin-close-btn" class="modal-close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="admin-grid">
+            <div class="admin-kpi">
+              <div id="adm-sessions" class="admin-kpi-val">0</div>
+              <div class="admin-kpi-label">Sessions Jouées</div>
+            </div>
+            <div class="admin-kpi">
+              <div id="adm-ad-impressions" class="admin-kpi-val">0</div>
+              <div class="admin-kpi-label">Impressions Pubs</div>
+            </div>
+            <div class="admin-kpi">
+              <div id="adm-ad-rev" class="admin-kpi-val">$0.00</div>
+              <div class="admin-kpi-label">Revenus Pubs (Est.)</div>
+            </div>
+            <div class="admin-kpi">
+              <div id="adm-iap-rev" class="admin-kpi-val">$0.00</div>
+              <div class="admin-kpi-label">Revenus IAP (Bruts)</div>
+            </div>
+            <div class="admin-kpi">
+              <div id="adm-total-rev" class="admin-kpi-val" style="color: #39ff14;">$0.00</div>
+              <div class="admin-kpi-label">Revenu Total Généré</div>
+            </div>
+            <div class="admin-kpi">
+              <div id="adm-ecpm" class="admin-kpi-val" style="color: var(--neon-yellow);">$12 - $25</div>
+              <div class="admin-kpi-label">eCPM Cible</div>
+            </div>
+          </div>
+
+          <div style="font-weight: 700; font-size: 12px; margin-bottom: 8px; color: var(--neon-pink);">OUTILS DE DÉMONSTRATION & TEST :</div>
+          <div class="admin-tools-row">
+            <button id="adm-add-credits" class="tool-btn">💎 Ajouter +5,000 Crédits Synth (Test Boutique)</button>
+            <button id="adm-add-orbs" class="tool-btn">🔮 Ajouter +25 Orbs Immédiatement</button>
+            <button id="adm-god-mode" class="tool-btn">🛡️ God Mode : OFF (Boucliers Infinis)</button>
+            <button id="adm-spawn-boss" class="tool-btn">👾 Faire Apparaître le Boss Titan Synth</button>
+            <button id="adm-nuke" class="tool-btn">💥 Nuke : Détruire tous les nœuds à l'écran</button>
+            <button id="adm-test-ad" class="tool-btn">📺 Simuler une Pub Récompensée Complète</button>
+            <button id="adm-reset" class="tool-btn danger">🔄 Réinitialiser les données (Factory Reset)</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Game Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/meta.js"></script>
+  <script src="js/monetization.js"></script>
+  <script src="js/entities.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

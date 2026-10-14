@@ -1,0 +1,27 @@
+{
+  "name": "neon-ricochet-rogue-synth",
+  "version": "1.0.0",
+  "description": "Neon Ricochet: Rogue Synth - Commercial HTML5 Physics Breaker Roguelite Web Game built for high retention, ad monetization and resale on Flippa.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "roguelite",
+    "physics-game",
+    "brick-breaker",
+    "peglin",
+    "html5-game",
+    "synthwave",
+    "canvas-game",
+    "monetization",
+    "flippa-ready"
+  ],
+  "author": "NeonArcade Studios",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  }
+}
